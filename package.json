@@ -20,10 +20,11 @@
     "clsx": "^2.1.1",
     "convex": "^1.14.4",
     "lucide-react": "^0.428.0",
-    "next": "14.2.5",
+    "next": "^14.2.13",
     "next-themes": "^0.3.0",
     "react": "^18",
     "react-dom": "^18",
+    "react-hot-toast": "^2.4.1",
     "svix": "^1.32.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7"
