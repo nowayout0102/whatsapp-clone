@@ -48,7 +48,14 @@ export const sendTextMessage = mutation({
 			await ctx.scheduler.runAfter(0, api.openai.chat, {
 				messageBody: args.content,
 				conversation: args.conversation,
-			})
+			});
+		}
+
+		if(args.content.startsWith("@dall-e")){
+			await ctx.scheduler.runAfter(0, api.openai.dall_e, {
+				messageBody: args.content,
+				conversation: args.conversation,
+			});
 		}
     },
 });
@@ -56,13 +63,14 @@ export const sendTextMessage = mutation({
 export const sendChatGPTMessage = mutation({
 	args:{
 		content: v.string(),
-		conversation: v.id("conversations")
+		conversation: v.id("conversations"),
+		messageType: v.union(v.literal("text"), v.literal("image"))
 	},
 	handler: async (ctx, args) => {
 		await ctx.db.insert("messages", {
 			content: args.content,
 			sender: "ChatGPT",
-			messageType: "text",
+			messageType: args.messageType,
 			conversation: args.conversation,
 		});
 	}
@@ -89,7 +97,8 @@ export const getMessages = query({
         const messagesWithSender = await Promise.all(
             messages.map(async (message) => {
 				if(message.sender === "ChatGPT"){
-					return {...message, sender: {name:"ChatGPT",image:"/gpt.png"}}
+					const image = message.messageType === "text" ? "/gpt.png" : "dall-e.png";
+					return {...message, sender: {name:"ChatGPT", image}};
 				}
                 let sender;
 				// Check if sender profile is in cache
